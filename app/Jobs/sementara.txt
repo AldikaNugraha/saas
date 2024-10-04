@@ -1,0 +1,42 @@
+$lattLongArray = [
+            [107.034426,-6.472682],
+            [107.034402,-6.472724],
+            [107.034354,-6.472724],
+            [107.03433,-6.472683],
+            [107.034354,-6.472641],
+            [107.034402,-6.472641],
+            [107.034426,-6.472682]
+        ];
+        
+        $points = array_map(function ($coordinates) {
+            return Point::make($coordinates[0], $coordinates[1], srid: 4326);
+        }, $lattLongArray);
+        // Create LineString from the array of Points
+        $lineString = LineString::make($points);
+        // Now create the polygon using the LineString
+        $polygon = Polygon::make([$lineString]);
+        $geojson_generator = app(GeojsonGenerator::class);
+        $geojson = $geojson_generator->generatePolygon($polygon);
+
+// Repeater::make("numerical")
+                //     ->relationship()
+                //     ->schema([
+                //         DateTimePicker::make('created_at')
+                //             ->format('d-m-Y')
+                //             ->weekStartsOnMonday()
+                //             ->timezone('Asia/Jakarta')
+                //             ->maxDate(now())
+                //             ->label("Tanggal"),
+                //         TextInput::make('num_field')
+                //             ->label("Numerical Field")
+                //             ->required(),
+                //     ])
+                //     ->mutateRelationshipDataBeforeCreateUsing(function (array $data): array {
+                //         list($day, $month, $year) = explode('-', $data['created_at']);
+
+                //         $data['day'] = $day;
+                //         $data['month'] = $month;
+                //         $data['year'] = $year;
+
+                //         return $data;
+                //     })
