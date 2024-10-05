@@ -26,4 +26,9 @@ class Categorical extends Model
     {
         return $this->hasMany(Numerical::class, "categorical_id");
     }
+
+    public function diffnumerical()
+    {
+        return $this->hasMany(Diffnumerical::class, "categorical_id");
+    }
 }
