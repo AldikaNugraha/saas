@@ -9,7 +9,7 @@ class Diffnumerical extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'categorical_id', 'num_field', 'day', 'month', 'year'
+        'categorical_id', 'num_field', 'day', 'month', 'year', "created_at"
     ];
 
     public function categorical()
@@ -17,8 +17,9 @@ class Diffnumerical extends Model
         return $this->belongsTo(Categorical::class);
     }
     
-    public function types()
+    public function numericalType() 
     {
-        return $this->belongsToMany(Type::class);
+        return $this->hasMany(NumericalType::class, "diffnumerical_id");
     }
+    
 }

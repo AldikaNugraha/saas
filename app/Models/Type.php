@@ -11,8 +11,8 @@ class Type extends Model
     protected $fillable = [
         'name'
     ];
-        public function numericals()
+        public function numericalType()
     {
-        return $this->belongsToMany(Numerical::class);
+        return $this->hasMany(NumericalType::class, "type_id");
     }
 }

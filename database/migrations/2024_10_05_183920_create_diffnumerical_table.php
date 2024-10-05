@@ -19,7 +19,8 @@ return new class extends Migration
             $table->integer('day');
             $table->integer('month');
             $table->integer('year');
-            $table->timestampTz("timestamp")->useCurrent();
+            $table->timestampTz("created_at")->useCurrent();
+            $table->timestampTz(column: "updated_at")->useCurrent();
         });
     }
 

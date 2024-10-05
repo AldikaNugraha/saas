@@ -33,6 +33,9 @@ class RasterResource extends Resource
                     ->preload()
                     ->searchable()
                     ->relationship("project","name"),
+                TextInput::make('name')
+                    ->required()
+                    ->label("Raster input"),
                 Select::make('source')
                     ->required()
                     ->options([

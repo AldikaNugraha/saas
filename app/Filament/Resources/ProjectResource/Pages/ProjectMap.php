@@ -9,7 +9,7 @@ use Filament\Resources\Pages\Page;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use GuzzleHttp\Client;
 
-function sendOverlayRequest(Raster $imageRecord, $vectorRecord)
+function sendOverlayRequest(Raster $imageRecord, $vectorRecord = null )
 {
     $client = new Client();
 
@@ -48,6 +48,7 @@ class ProjectMap extends Page
     {
         $this->record = $this->resolveRecord($record);
         $this->project_vector = getVector($this->record);
+        // dd($this->project_vector);
         // dd(
         // "Geojson: ". $this->project_vector,
         //     "Memory Taken: ". round(memory_get_peak_usage() / (1024 * 1024), 2) . "MB",

@@ -6,6 +6,7 @@ use App\Filament\Resources\DiffnumericalResource\Pages;
 use App\Filament\Resources\DiffnumericalResource\RelationManagers;
 use App\Models\Diffnumerical;
 use Filament\Forms;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -25,6 +26,9 @@ class DiffnumericalResource extends Resource
     {
         return $form
             ->schema([
+                TextInput::make('name')
+                    ->required()
+                    ->label("Numerical input"),
                 Select::make("categorical_id")
                     ->required()
                     ->preload()
@@ -40,6 +44,13 @@ class DiffnumericalResource extends Resource
                     ->required()
                     ->maxLength(255)
                     ->label("Enter Numeric Value"),
+                Repeater::make("numericalType")
+                    ->relationship()
+                    ->schema([
+                        Select::make("type_id")
+                            ->relationship("type","name")
+                            ->required(),
+                    ])
             ]);
     }
 
@@ -58,6 +69,9 @@ class DiffnumericalResource extends Resource
                     ->numeric()
                     ->sortable()
                     ->label("Numerical Field"),
+                TextColumn::make("numericalType.type.name")
+                    ->searchable()
+                    ->label("Type Name"),
                 TextColumn::make("created_at")
                     ->date()
                     ->label("Created At"),
@@ -67,7 +81,9 @@ class DiffnumericalResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -79,7 +95,6 @@ class DiffnumericalResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\TypesRelationManager::class,
         ];
     }
 
