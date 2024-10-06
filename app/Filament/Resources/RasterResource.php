@@ -35,7 +35,7 @@ class RasterResource extends Resource
                     ->relationship("project","name"),
                 TextInput::make('name')
                     ->required()
-                    ->label("Raster input"),
+                    ->label("Raster name"),
                 Select::make('source')
                     ->required()
                     ->options([

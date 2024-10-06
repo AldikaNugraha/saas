@@ -4,36 +4,45 @@ namespace App\Filament\Resources\ProjectResource\Pages;
 
 use App\Filament\Resources\ProjectResource;
 use App\Models\Project;
-use App\Models\Raster;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use GuzzleHttp\Client;
 
-function sendOverlayRequest(Raster $imageRecord, $vectorRecord = null )
+function sendOverlayRequest( $project_id, $raster_id, $vectorRecord = null )
 {
     $client = new Client();
 
     $client->post('http://127.0.0.1:5001/getMapAttr', [
         'json' => [
-            'id' => $imageRecord->project_id,
+            'raster_ids' => $raster_id,
+            'project_id' => $project_id,
             'geojson' => $vectorRecord,
         ],
     ]);
 }
 
 function getVector(Project $projectRecord){
-    // Clone the query to avoid modifying the original
-    $query = $projectRecord->categoricals()->with('vectors');
+    // Retrieve all categoricals with their vectors for the project
+    $categoricals = $projectRecord->categoricals()->with('vectors')->get();
     
-    // Eager load the first related categorical and its vector
-    $categorical = $query->first();
-    
-    if ($categorical) {
-        $categorical_vector = $categorical->vectors->first();
-        return $categorical_vector ? $categorical_vector->geojson : null;
+    // Initialize an array to store the results
+    $geojsonData = [];
+
+    foreach ($categoricals as $categorical) {
+        foreach ($categorical->vectors as $vector) {
+            // Push each vector's geojson to the result array
+            $geojsonData[] = $vector->geojson;
+        }
     }
 
-    return null;
+    return $geojsonData;
+}
+
+function getRaster(Project $projectRecord) {
+    // Retrieve all related rasters for the project and pluck their IDs
+    $rasterIds = $projectRecord->raster()->pluck('id');
+
+    return $rasterIds;
 }
 
 class ProjectMap extends Page
@@ -48,16 +57,17 @@ class ProjectMap extends Page
     {
         $this->record = $this->resolveRecord($record);
         $this->project_vector = getVector($this->record);
-        // dd($this->project_vector);
+        $this->project_raster = getRaster($this->record);
+        $this->project_id = $this->record->id;
         // dd(
         // "Geojson: ". $this->project_vector,
         //     "Memory Taken: ". round(memory_get_peak_usage() / (1024 * 1024), 2) . "MB",
         //     "Time Taken: ". round(microtime(2)- LARAVEL_START, 2). "sec",
         // );
 
-        $this->project_raster = $this->record->raster;
-        if ($this->project_raster->first() !== null) {
-            sendOverlayRequest($this->project_raster->first(), $this->project_vector);
+
+        if ($this->record->raster->first() !== null and $this->project_vector !== null) {
+            sendOverlayRequest($this->project_id, $this->project_raster, $this->project_vector);
         }
     }
 

@@ -39,8 +39,12 @@ class RasterJob implements ShouldQueue
             $response = $client->post($api_url, [
                 'multipart' => [
                     [
-                        'name'     => 'id', 
-                        'contents' => $this->file->project_id  // Send the id as a separate field
+                        'name'     => 'raster_id', 
+                        'contents' => $this->file->id
+                    ],
+                    [
+                        'name'     => 'project_id', 
+                        'contents' => $this->file->project_id
                     ],
                     [
                         'name'     => 'file', 

@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('numerical_type', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('diffnumerical_id')->constrained("diffnumericals");
-            $table->foreignId('type_id')->constrained("types");
+            $table->foreignId('diffnumerical_id')->constrained("diffnumericals")->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('type_id')->constrained("types")->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestampTz("created_at")->useCurrent();
             $table->timestampTz("updated_at")->useCurrent();
         });

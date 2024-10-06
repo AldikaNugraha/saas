@@ -46,13 +46,13 @@ class VectorResource extends Resource
             ->columns([
                 TextColumn::make("categorical.name")
                     ->searchable()
-                    ->label("Nama Data"),
+                    ->label("Categorical Name"),
                 TextColumn::make("type")
-                    ->label("Tipe Vektor"),
+                    ->label("Vector type"),
                 TextColumn::make("num_features")
-                    ->label("Jumlah Vektor"),
+                    ->label("Num of Vector"),
                 TextColumn::make("area")
-                    ->label("Luas (Km2)"),
+                    ->label("Area (Km2)"),
             ])
             ->filters([
                 //
