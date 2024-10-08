@@ -8,34 +8,25 @@ use Filament\Resources\Pages\Page;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use GuzzleHttp\Client;
 
-function sendOverlayRequest( $project_id, $raster_id, $vectorRecord = null )
+function sendOverlayRequest( $project_id, $raster_ids, $vector_ids = null )
 {
     $client = new Client();
 
     $client->post('http://127.0.0.1:5001/getMapAttr', [
         'json' => [
-            'raster_ids' => $raster_id,
+            'raster_ids' => $raster_ids,
             'project_id' => $project_id,
-            'geojson' => $vectorRecord,
+            'vector_ids' => $vector_ids,
         ],
     ]);
 }
 
-function getVector(Project $projectRecord){
-    // Retrieve all categoricals with their vectors for the project
+function getVector(Project $projectRecord) {
     $categoricals = $projectRecord->categoricals()->with('vectors')->get();
-    
-    // Initialize an array to store the results
-    $geojsonData = [];
-
-    foreach ($categoricals as $categorical) {
-        foreach ($categorical->vectors as $vector) {
-            // Push each vector's geojson to the result array
-            $geojsonData[] = $vector->geojson;
-        }
-    }
-
-    return $geojsonData;
+    return $categoricals
+        ->pluck('vectors.*.id')
+        ->flatten()
+        ->all();
 }
 
 function getRaster(Project $projectRecord) {

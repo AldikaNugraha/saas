@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\RasterResource\Pages;
 
 use App\Filament\Resources\RasterResource;
-use App\Jobs\ProcessFileJob;
 use App\Jobs\RasterJob;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
@@ -21,7 +20,6 @@ class CreateRaster extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         $record = static::getModel()::create($data);
-
         RasterJob::dispatch($record);
 
         return $record;

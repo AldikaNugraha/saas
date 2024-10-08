@@ -21,11 +21,7 @@ class Vector extends Model
     // ];
 
     protected $fillable = [
-        'categorical_id', 'type', 'num_features', 'area', 'geojson', "path"
-    ];
-
-    protected $casts = [
-        'path' => 'array',
+        'categorical_id', 'type', 'num_features', 'area', 'name'
     ];
 
     public function categorical()

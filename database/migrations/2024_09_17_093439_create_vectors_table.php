@@ -14,11 +14,10 @@ return new class extends Migration
         Schema::create('vectors', function (Blueprint $table) {
             $table->id()->autoIncrement();
             $table->foreignId('categorical_id')->constrained("categoricals")->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('name');
             $table->string('type')->nullable();
             $table->double('num_features')->nullable();
             $table->float('area')->nullable();
-            $table->string('path');
-            $table->json('geojson')->nullable();
             $table->timestampTz("created_at")->useCurrent();
             $table->timestampTz("updated_at")->useCurrent();
         });

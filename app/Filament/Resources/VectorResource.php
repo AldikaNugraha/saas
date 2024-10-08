@@ -32,8 +32,10 @@ class VectorResource extends Resource
                     ->preload()
                     ->searchable()
                     ->relationship("categorical","name"),
+                TextInput::make("name")
+                    ->label("Vector Name")
+                    ->required(),
                 FileUpload::make('path')
-                    ->multiple()
                     ->preserveFilenames()
                     ->previewable(false)
                     ->label("Masukan File GeoJSON"),

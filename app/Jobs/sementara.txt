@@ -27,3 +27,6 @@ $geojson = $geojson_generator->generatePolygon($polygon);
 
 //         return $data;
 //     })
+->getStateUsing(function($record){
+                        return $record;
+                    })

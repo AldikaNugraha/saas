@@ -2,37 +2,43 @@
 
 namespace App\Filament\Resources\VectorResource\Pages;
 
-use App\Jobs\ProcessFileJob;
+use App\Jobs\GeojsonJob;
 use Illuminate\Database\Eloquent\Model;
 use App\Filament\Resources\VectorResource;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\Storage;
 
 class CreateVector extends CreateRecord
 {
     protected static string $resource = VectorResource::class;
+    // Define class properties
+    protected string $file_path;
+    protected string $geojson_response;
     protected function mutateFormDataBeforeCreate(array $data): array {
         $file_name = $data["path"];
-        $file_path = asset("storage/{$file_name[0]}");
+        $this->file_path = asset("storage/{$file_name}");
         $context = stream_context_create([
             "ssl" => [
                 "verify_peer" => false,
                 "verify_peer_name" => false,
             ],
         ]);
-        $file_content = file_get_contents($file_path, false, $context);
-        $data["geojson"] = json_encode(json_decode($file_content, True));
+        $file_content = file_get_contents($this->file_path, false, $context);
+        $this->geojson_respone = json_encode(json_decode($file_content, True));
 
         return $data;
     }
 
     protected function handleRecordCreation(array $data): Model
     {
+        // Remove the 'path' key from the data array if it exists
+        unset($data['path']);
         // Create the record
         $record = static::getModel()::create($data);
 
         // Dispatch background job to process the file
-        ProcessFileJob::dispatch($record);
-
+        GeojsonJob::dispatch($record, $this->geojson_respone);
+        Storage::delete($this->file_path);
         // Return the created record
         return $record;
     }
