@@ -44,6 +44,7 @@ class RasterResource extends Resource
                     ])
                     ->label("Sumber Data"),
                 FileUpload::make('path')
+                    ->maxSize(51200)
                     ->preserveFilenames()
                     ->previewable(false)
                     ->label("Masukan File Tiff"),

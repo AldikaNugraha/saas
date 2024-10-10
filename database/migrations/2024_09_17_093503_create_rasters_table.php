@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('name');
             $table->foreignId('project_id')->constrained()->onDelete('cascade');
             $table->string('source'); #satelit atau drone
-            $table->string('path'); #path tifnya
             $table->integer('band')->nullable(); #band nya RGB/NIR/NDVI
             $table->double('north')->nullable();
             $table->double('south')->nullable();

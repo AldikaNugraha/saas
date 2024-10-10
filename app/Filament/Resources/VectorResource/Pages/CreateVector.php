@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Storage;
 class CreateVector extends CreateRecord
 {
     protected static string $resource = VectorResource::class;
-    // Define class properties
     protected string $file_path;
     protected string $geojson_response;
     protected function mutateFormDataBeforeCreate(array $data): array {
@@ -24,22 +23,18 @@ class CreateVector extends CreateRecord
             ],
         ]);
         $file_content = file_get_contents($this->file_path, false, $context);
-        $this->geojson_respone = json_encode(json_decode($file_content, True));
-
+        $this->geojson_response = json_encode(json_decode($file_content, True));
         return $data;
     }
 
     protected function handleRecordCreation(array $data): Model
     {
-        // Remove the 'path' key from the data array if it exists
         unset($data['path']);
-        // Create the record
         $record = static::getModel()::create($data);
-
-        // Dispatch background job to process the file
-        GeojsonJob::dispatch($record, $this->geojson_respone);
+        
+        GeojsonJob::dispatch($record, $this->geojson_response);
         Storage::delete($this->file_path);
-        // Return the created record
+
         return $record;
     }
 }

@@ -72,5 +72,12 @@ return [
     'links' => [
         public_path('storage') => storage_path('app/public'),
     ],
-
+    'uploads' => [
+        'driver' => 'local',
+        'root' => storage_path('app/public/uploads'),
+        'url' => env('APP_URL') . '/storage/uploads',
+        'visibility' => 'public',
+        'max_size' => 51200, // 50MB
+    ],
+    
 ];

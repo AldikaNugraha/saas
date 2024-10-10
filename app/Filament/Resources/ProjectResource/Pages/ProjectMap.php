@@ -8,7 +8,7 @@ use Filament\Resources\Pages\Page;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use GuzzleHttp\Client;
 
-function sendOverlayRequest( $project_id, $raster_ids, $vector_ids = null )
+function sendOverlayRequest( $project_id= null, $raster_ids= null, $vector_ids= null)
 {
     $client = new Client();
 
@@ -56,11 +56,6 @@ class ProjectMap extends Page
         //     "Time Taken: ". round(microtime(2)- LARAVEL_START, 2). "sec",
         // );
 
-
-        if ($this->record->raster->first() !== null and $this->project_vector !== null) {
-            sendOverlayRequest($this->project_id, $this->project_raster, $this->project_vector);
-        }
+        sendOverlayRequest($this->project_id, $this->project_raster, $this->project_vector);
     }
-
-
 }

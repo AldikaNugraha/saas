@@ -11,7 +11,6 @@ class Raster extends Model
     protected $fillable = [
         'project_id', 
         'source', 
-        "path",
         'band', 
         'north', 
         'south', 
