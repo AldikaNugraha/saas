@@ -27,12 +27,6 @@ class RasterJob implements ShouldQueue
     public function handle()
     {   
         $stream = fopen($this->geotiff_path, 'r');
-        // $context = stream_context_create([
-        //     "ssl" => [
-        //         "verify_peer" => false,
-        //         "verify_peer_name" => false,
-        //     ],
-        // ]);
         
         $client = new Client();
         $api_url = 'http://127.0.0.1:5001/process-raster';
@@ -59,13 +53,14 @@ class RasterJob implements ShouldQueue
             
             $respone_body = $response->getBody()->getContents();
             $respone_content = json_decode($respone_body, true); // Pass 'true' to get an associative array
-            $this->file->band = $respone_content['band'];
+            $this->file->band = $respone_content['bands'];
             $this->file->north = $respone_content['north'];
             $this->file->south = $respone_content['south'];
             $this->file->east = $respone_content['east'];
             $this->file->west = $respone_content['west'];
             $this->file->save();
 
+            Storage::delete($this->geotiff_path);
         } catch (RequestException $e) {
             if (is_resource($stream)) {
                 fclose($stream);

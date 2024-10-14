@@ -32,7 +32,7 @@ class CreateVector extends CreateRecord
         unset($data['path']);
         $record = static::getModel()::create($data);
         
-        GeojsonJob::dispatch($record, $this->geojson_response);
+        GeojsonJob::dispatch($record, $this->geojson_response, is_delete:false);
         Storage::delete($this->file_path);
 
         return $record;

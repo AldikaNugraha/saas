@@ -16,23 +16,26 @@ class GeojsonJob implements ShouldQueue
 
     protected $file;
     protected $geojson;
+    protected $is_delete;
 
-    public function __construct(Vector $file, $geojson)
+    public function __construct(Vector $file, $geojson = null, $is_delete)
     {
         $this->file = $file;
         $this->geojson = $geojson;
+        $this->is_delete = $is_delete;
     }
 
     public function handle()
     {   
-        $data = [
-            'geojson' => $this->geojson,
-            'vector_id' => $this->file->id, 
-            'project_id' => $this->file->categorical->project->id 
-        ];
-
         $client = new Client();
         $api_url = 'http://127.0.0.1:5001/process-geojson';
+        $data = [
+            'vector_id' => $this->file->id, 
+            'project_id' => $this->file->categorical->project->id,
+            'is_delete' => $this->is_delete,
+            'geojson' => $this->geojson
+        ];
+
         try {
             $response = $client->post($api_url, [
                 'headers' => [
@@ -41,14 +44,14 @@ class GeojsonJob implements ShouldQueue
                 ],
                 'json' => $data,  // Ensure the data is sent as JSON
             ]);
-
-            // Get the response body
-            $respone_body = $response->getBody()->getContents();
-            $respone_content = json_decode($respone_body, true);
-            $this->file->area = $respone_content['area'];
-            $this->file->type = $respone_content['type'];
-            $this->file->num_features = $respone_content['num_features'];
-            $this->file->save();
+            if (!$this->is_delete) {
+                $respone_body = $response->getBody()->getContents();
+                $respone_content = json_decode($respone_body, true);
+                $this->file->area = $respone_content['area'];
+                $this->file->type = $respone_content['type'];
+                $this->file->num_features = $respone_content['num_features'];
+                $this->file->save();
+            }
 
         } catch (RequestException $e) {
             if ($e->hasResponse()) {

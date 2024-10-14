@@ -4,7 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\VectorResource\Pages;
 use App\Filament\Resources\VectorResource\RelationManagers;
+use App\Jobs\GeojsonJob;
 use App\Models\Vector;
+use Exception;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -15,7 +17,8 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Eloquent\Model;
+use GuzzleHttp\Exception\RequestException;
 
 class VectorResource extends Resource
 {
@@ -62,7 +65,16 @@ class VectorResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->requiresConfirmation()
+                    ->before(function (Model $record) {
+                        try {
+                            GeojsonJob::dispatch($record,null,true);
+                        } catch (Exception $e) {
+                            // Handle the exception and output the error message
+                            dd($e->getMessage());
+                        }
+                }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
