@@ -25,7 +25,7 @@ class CreateRaster extends CreateRecord
         unset($data['path']);
         $record = static::getModel()::create($data);
 
-        RasterJob::dispatch($record, $this->file_path);
+        RasterJob::dispatch($record, $this->file_path,false);
         return $record;
     }
 }

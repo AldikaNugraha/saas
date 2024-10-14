@@ -17,16 +17,22 @@ class RasterJob implements ShouldQueue
 
     protected $file;
     protected $geotiff_path;
+    protected $is_delete;
 
-    public function __construct(Raster $file, $geotiff_path)
+    public function __construct(Raster $file, $geotiff_path = null, $is_delete)
     {
         $this->file = $file;
         $this->geotiff_path = $geotiff_path;
+        $this->is_delete = $is_delete;
     }
 
     public function handle()
     {   
-        $stream = fopen($this->geotiff_path, 'r');
+        if (!$this->is_delete) {
+            $stream = fopen($this->geotiff_path, 'r');
+        } else {
+            $stream = $this->geotiff_path;
+        }
         
         $client = new Client();
         $api_url = 'http://127.0.0.1:5001/process-raster';
@@ -43,6 +49,10 @@ class RasterJob implements ShouldQueue
                         'contents' => $this->file->project_id
                     ],
                     [
+                        'name'     => 'is_delete', 
+                        'contents' => $this->is_delete
+                    ],
+                    [
                         'name'     => 'file', 
                         'contents' => $stream, // Use the file stream instead of file_get_contents
                         'filename' => basename($this->geotiff_path)
@@ -50,17 +60,18 @@ class RasterJob implements ShouldQueue
                 ],
                 'verify' => false // Disable SSL verification
             ]);
-            
-            $respone_body = $response->getBody()->getContents();
-            $respone_content = json_decode($respone_body, true); // Pass 'true' to get an associative array
-            $this->file->band = $respone_content['bands'];
-            $this->file->north = $respone_content['north'];
-            $this->file->south = $respone_content['south'];
-            $this->file->east = $respone_content['east'];
-            $this->file->west = $respone_content['west'];
-            $this->file->save();
+            if (!$this->is_delete) {
+                $respone_body = $response->getBody()->getContents();
+                $respone_content = json_decode($respone_body, true); // Pass 'true' to get an associative array
+                $this->file->band = $respone_content['bands'];
+                $this->file->north = $respone_content['north'];
+                $this->file->south = $respone_content['south'];
+                $this->file->east = $respone_content['east'];
+                $this->file->west = $respone_content['west'];
+                $this->file->save();
+                Storage::delete($this->geotiff_path);
+            }
 
-            Storage::delete($this->geotiff_path);
         } catch (RequestException $e) {
             if (is_resource($stream)) {
                 fclose($stream);

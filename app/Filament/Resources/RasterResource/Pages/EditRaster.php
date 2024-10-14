@@ -22,7 +22,7 @@ class EditRaster extends EditRecord
     {
         unset($data['path']);
         $record->update($data);
-        RasterJob::dispatch($record, $this->file_path);
+        RasterJob::dispatch($record, $this->file_path,false);
         
         return $record;
     }
