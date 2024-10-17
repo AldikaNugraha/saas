@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CategoricalResource\Widgets;
 
+use Filament\Support\RawJs;
 use App\Filament\Resources\CategoricalResource\Pages\ListCategoricals;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +14,22 @@ class NumericalOverview extends ChartWidget
     protected static ?string $heading = 'Chart';
 
     public ?Model $record = null;
+
+    protected static ?array $options = [
+        'plugins' => [
+            'legend' => [
+                'display' => true,
+            ],
+            'datalabels' => [
+                'align' => 'top',
+                'color' => '#FF0000', // Example: Red color for the labels
+                'font' => [
+                    'weight' => 'bold',
+                ],
+            ],
+        ],
+    ];
+
     protected function getTablePage(): string
     {
         return ListCategoricals::class;
@@ -39,8 +56,8 @@ class NumericalOverview extends ChartWidget
             $datasets[] = [
                 'label' => $categorical_record->name, // Label for each categorical record
                 'data' => $num_fields, // Data points (num_field values)
-                'backgroundColor' => $this->generateColor($categorical_record->name), // You can make this dynamic per category if needed
-                'borderColor' => $this->generateColor($categorical_record->name), // You can make this dynamic per category if needed
+                // 'backgroundColor' => $this->generateColor($categorical_record->name), // You can make this dynamic per category if needed
+                // 'borderColor' => $this->generateColor($categorical_record->name), // You can make this dynamic per category if needed
             ];
             
             // Optionally, you can collect labels based on specific criteria (e.g., month names)
@@ -54,7 +71,7 @@ class NumericalOverview extends ChartWidget
 
         return [
             'datasets' => $datasets,
-            'labels' => $labels, // X-axis labels (e.g., months)
+            'labels' => $labels,
         ];
     }
 

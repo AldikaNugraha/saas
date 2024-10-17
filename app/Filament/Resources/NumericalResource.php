@@ -33,6 +33,9 @@ class NumericalResource extends Resource
                     ->preload()
                     ->searchable()
                     ->relationship("categorical","name"),
+                TextInput::make('name')
+                    ->required()
+                    ->label("Numerical Name"),
                 DateTimePicker::make('created_at')
                                 ->format('d-m-Y')
                                 ->weekStartsOnMonday()

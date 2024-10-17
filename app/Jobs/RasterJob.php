@@ -49,6 +49,10 @@ class RasterJob implements ShouldQueue
                         'contents' => $this->file->project_id
                     ],
                     [
+                        'name'     => 'name', 
+                        'contents' => $this->file->name
+                    ],
+                    [
                         'name'     => 'is_delete', 
                         'contents' => $this->is_delete
                     ],
@@ -62,7 +66,7 @@ class RasterJob implements ShouldQueue
             ]);
             if (!$this->is_delete) {
                 $respone_body = $response->getBody()->getContents();
-                $respone_content = json_decode($respone_body, true); // Pass 'true' to get an associative array
+                $respone_content = json_decode($respone_body, true)[0];
                 $this->file->band = $respone_content['bands'];
                 $this->file->north = $respone_content['north'];
                 $this->file->south = $respone_content['south'];

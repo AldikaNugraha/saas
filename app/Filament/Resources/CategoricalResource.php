@@ -3,12 +3,10 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CategoricalResource\Pages;
-use App\Filament\Resources\CategoricalResource\RelationManagers;
+use App\Filament\Resources\CategoricalResource\Pages\CategoricalChart;
+use App\Filament\Resources\CategoricalResource\Widgets\CustomChart;
 use App\Models\Categorical;
-use Filament\Forms;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Tables\Columns\Summarizers\Sum;
-use Filament\Forms\Components\Repeater;
+use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -16,8 +14,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CategoricalResource extends Resource
 {
@@ -77,7 +73,7 @@ class CategoricalResource extends Resource
                 ]),
             ]);
     }
-
+    
     public static function getRelations(): array
     {
         return [
@@ -89,6 +85,7 @@ class CategoricalResource extends Resource
 {
     return [
         CategoricalResource\Widgets\NumericalOverview::class,
+        CustomChart::class,
     ];
 }
 

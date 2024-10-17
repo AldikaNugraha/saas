@@ -30,3 +30,31 @@ $geojson = $geojson_generator->generatePolygon($polygon);
 ->getStateUsing(function($record){
                         return $record;
                     })
+
+ $wire.$watch('chartData', (newChartData) => {
+            if (chart) {
+                chart.data.labels = newChartData.labels;
+                chart.data.datasets = newChartData.datasets;
+                chart.update();
+            } else {
+                chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: newChartData.labels,
+                        datasets: newChartData.datasets
+                    },
+                    options: {
+                        plugins: {
+                            datalabels: {
+                                color: 'red'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+        });

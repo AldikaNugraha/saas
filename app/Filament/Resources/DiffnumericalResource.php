@@ -28,7 +28,7 @@ class DiffnumericalResource extends Resource
             ->schema([
                 TextInput::make('name')
                     ->required()
-                    ->label("Numerical input"),
+                    ->label("Numerical Name"),
                 Select::make("categorical_id")
                     ->required()
                     ->preload()
