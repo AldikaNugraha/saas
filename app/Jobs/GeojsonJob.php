@@ -9,11 +9,10 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
-
+use Laravel\Sanctum\PersonalAccessToken;
 class GeojsonJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
     protected $file;
     protected $geojson;
     protected $is_delete;
@@ -29,6 +28,7 @@ class GeojsonJob implements ShouldQueue
     {   
         $client = new Client();
         $api_url = 'http://127.0.0.1:5001/process-geojson';
+
         $data = [
             'vector_id' => $this->file->id, 
             'project_id' => $this->file->categorical->project->id,
@@ -41,6 +41,7 @@ class GeojsonJob implements ShouldQueue
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',
+                    'Authorization' => env('FLASK_API_TOKEN')
                 ],
                 'json' => $data,  // Ensure the data is sent as JSON
             ]);

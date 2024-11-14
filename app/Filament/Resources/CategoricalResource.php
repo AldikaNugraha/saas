@@ -3,10 +3,10 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CategoricalResource\Pages;
-use App\Filament\Resources\CategoricalResource\Pages\CategoricalChart;
 use App\Filament\Resources\CategoricalResource\Widgets\CustomChart;
 use App\Models\Categorical;
-use Filament\Actions\Action;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -40,7 +40,12 @@ class CategoricalResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->query(Categorical::with("numerical", "project"))
+            ->modifyQueryUsing(function (Builder $query) {
+                // Assuming `user_id` is the foreign key in the projects table
+                $query->whereHas('project', function ($projectQuery) {
+                    $projectQuery->where('user_id', auth()->user()->id);
+                });
+            })
             ->columns([
                 TextColumn::make("name")
                     ->searchable()
@@ -50,10 +55,7 @@ class CategoricalResource extends Resource
                     ->label("Nama Projek"),
                 TextColumn::make("sum_num_field")
                     ->state(function (Categorical $record): float {
-                        // Clone the main query to avoid modifying the original
                         $query = $record->numerical()->toBase();
-                        
-                        // Sum the 'num_field' directly from the database
                         return (clone $query)->sum('num_field');
                     })
                     ->label("Sum Numerical Field"),

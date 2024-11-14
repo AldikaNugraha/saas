@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('diffnumericals', function (Blueprint $table) {
             $table->id()->autoIncrement();
             $table->string('name');
-            $table->foreignId('diffcategorical_id')->constrained("diffcategoricals")->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('categorical_id')->constrained("categoricals")->cascadeOnDelete()->cascadeOnUpdate();
             $table->unsignedBigInteger('num_field');
             $table->integer('day');
             $table->integer('month');

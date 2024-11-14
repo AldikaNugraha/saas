@@ -6,10 +6,12 @@ use App\Filament\Resources\RasterResource\Pages;
 use App\Filament\Resources\RasterResource\RelationManagers;
 use App\Jobs\RasterJob;
 use App\Models\Raster;
-use Filament\Forms;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Set;
+use Filament\Forms\Get;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -35,27 +37,84 @@ class RasterResource extends Resource
                     ->preload()
                     ->searchable()
                     ->relationship("project","name"),
-                TextInput::make('name')
-                    ->required()
-                    ->label("Raster name"),
                 Select::make('source')
                     ->required()
                     ->options([
                         'satellite' => 'Satellite',
                         'drone' => 'Drone',
                     ])
-                    ->label("Sumber Data"),
+                    ->reactive()
+                    // ->afterStateUpdated(function (Set $set, $state) {
+                    //     if ($state == "satellite"){
+                    //         $set('status', "draft");
+                    //     } elseif($state == "drone") {
+                    //         $set('status', "reviewing");
+                    //     }
+                    // })
+                    ->label("Sumber Data"),                 
+                TextInput::make('name')
+                    ->required()
+                    ->label("Raster name"),
+                Select::make('sattelite_source')
+                    ->options([
+                        'cop-dem-glo-90' => 'Copernicus DEM GLO-30',
+                        'sentinel-2-l1c' => 'Sentinel-2 Level-1C',
+                        'sentinel-2-l2a' => 'Sentinel-2 Level-2A',
+                        'sentinel-2-c1-l2a' => 'Sentinel-2 Collection 1 Level-2A',
+                        'landsat-c2-l2' => 'Landsat Collection 2 Level-2',
+                        'sentinel-2-pre-c1-l2a' => 'Sentinel-2 Pre-Collection 1 Level-2A',
+                    ])
+                    ->label("Sattelite Source")
+                    ->searchable()
+                    ->hidden(fn (Get $get) => $get('source') === 'drone')
+                    ->required(fn (Get $get) => $get('source') === 'satellite'),
+                Toggle::make('do_monitoring')
+                    ->label("Create Monitoring using this Collection ")
+                    ->hidden(fn (Get $get) => $get('source') === 'drone')
+                    ->required(fn (Get $get) => $get('source') === 'satellite'),
+                FileUpload::make('region')
+                    ->maxSize(51200)
+                    ->preserveFilenames()
+                    ->previewable(false)
+                    ->label("Masukan Region of Interest (ROI)")
+                    ->hint("Upload a GeoJSON")
+                    ->hidden(fn (Get $get) => $get('source') === 'drone')
+                    ->required(fn (Get $get) => $get('source') === 'satellite'),
+                DateTimePicker::make('start_date')
+                    ->format('d-m-Y')
+                    ->weekStartsOnMonday()
+                    ->timezone('Asia/Jakarta')
+                    ->maxDate(now())
+                    ->label("Start Date")
+                    ->hidden(fn (Get $get) => $get('source') === 'drone')
+                    ->required(fn (Get $get) => $get('source') === 'satellite'),
+                DateTimePicker::make('end_date')
+                    ->format('d-m-Y')
+                    ->weekStartsOnMonday()
+                    ->timezone('Asia/Jakarta')
+                    ->maxDate(now())
+                    ->label("End Date")
+                    ->hidden(fn (Get $get) => $get('source') === 'drone')
+                    ->required(fn (Get $get) => $get('source') === 'satellite'),
                 FileUpload::make('path')
                     ->maxSize(51200)
                     ->preserveFilenames()
                     ->previewable(false)
-                    ->label("Masukan File Tiff"),
+                    ->label("Masukan File Tiff")
+                    ->hidden(fn (Get $get) => $get('source') === 'satellite')
+                    ->required(fn (Get $get) => $get('source') === 'drone'),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
+        ->modifyQueryUsing(function (Builder $query) {
+            // Assuming `user_id` is the foreign key in the projects table
+            $query->whereHas('project', function ($projectQuery) {
+                $projectQuery->where('user_id', auth()->user()->id);
+            });
+        })
             ->columns([
                 TextColumn::make("project.name")
                     ->searchable()

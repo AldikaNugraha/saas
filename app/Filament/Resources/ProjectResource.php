@@ -22,7 +22,6 @@ class ProjectResource extends Resource
     protected static ?string $model = Project::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
     public static function form(Form $form): Form
     {
         return $form
@@ -47,6 +46,9 @@ class ProjectResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query) => 
+                $query->where('user_id', auth()->user()->id)
+            )
             ->columns([
                 TextColumn::make("name")
                     ->searchable()

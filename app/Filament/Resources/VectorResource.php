@@ -48,6 +48,12 @@ class VectorResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+        ->modifyQueryUsing(function (Builder $query) {
+            // Assuming `user_id` is the foreign key in the projects table
+            $query->whereHas('categorical.project', function ($projectQuery) {
+                $projectQuery->where('user_id', auth()->user()->id);
+            });
+        })
             ->columns([
                 TextColumn::make("categorical.name")
                     ->searchable()

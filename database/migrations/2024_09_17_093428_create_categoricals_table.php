@@ -15,6 +15,12 @@ return new class extends Migration
             $table->id()->autoIncrement();
             $table->foreignId('project_id')->constrained("projects")->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('name');
+            $table->string('pj_blok')->nullable();
+            $table->float('area')->nullable();
+            $table->integer('num_tree')->nullable();
+            $table->boolean('is_research')->nullable();
+            $table->boolean('is_panen')->nullable();
+            $table->boolean('is_pupuk')->nullable();
             $table->timestampTz("created_at")->useCurrent();
             $table->timestampTz("updated_at")->useCurrent();
         });

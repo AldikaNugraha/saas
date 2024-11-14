@@ -25,35 +25,35 @@ class CustomChart extends Widget
     // Override method getViewData untuk memberikan data ke view
     protected function getViewData(): array
     {
-        $this->chart = Chartjs::build()
-            ->name("tes")
-            ->type("bar")
-            ->size(["width" => 400, "height" => 200])
-            ->labels(['Label x', 'Label y'])
-            ->datasets([
-                [
-                    "label" => "My First dataset",
-                    'backgroundColor' => ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'],
-                    'data' => [69, 59]
-                ],
-                [
-                    "label" => "My First dataset",
-                    'backgroundColor' => ['rgba(255, 99, 132, 0.3)', 'rgba(54, 162, 235, 0.3)'],
-                    'data' => [65, 12]
-                ]
-            ])
-            ->options([
-                'scales' => [
-                    "y" => [
-                        "beginAtZero" => true
-                        ]
-                    ]
-                ]);
+        // $this->chart = Chartjs::build()
+        //     ->name("tes")
+        //     ->type("bar")
+        //     ->size(["width" => 400, "height" => 200])
+        //     ->labels(['Label x', 'Label y'])
+        //     ->datasets([
+        //         [
+        //             "label" => "My First dataset",
+        //             'backgroundColor' => ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'],
+        //             'data' => [69, 59]
+        //         ],
+        //         [
+        //             "label" => "My First dataset",
+        //             'backgroundColor' => ['rgba(255, 99, 132, 0.3)', 'rgba(54, 162, 235, 0.3)'],
+        //             'data' => [65, 12]
+        //         ]
+        //     ])
+        //     ->options([
+        //         'scales' => [
+        //             "y" => [
+        //                 "beginAtZero" => true
+        //                 ]
+        //             ]
+        //         ]);
 
         $this->dataa = json_encode($this->getChartData());
         return [
             'chartData' => $this->dataa,
-            'chart' => $this->chart,
+            // 'chart' => $this->chart,
         ];
     }
 

@@ -9,7 +9,8 @@ class Categorical extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'project_id', 'name'
+        'project_id', 'name', 'pj_blok','area',
+        'num_tree','is_research', 'is_panen','is_pupuk'
     ];
 
     public function project()
