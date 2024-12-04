@@ -7,18 +7,34 @@ use App\Models\Project;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 
 function sendOverlayRequest( $project_id= null, $raster_ids= null, $vector_ids= null)
 {
     $client = new Client();
 
-    $client->post('http://127.0.0.1:5001/getMapAttr', [
-        'json' => [
-            'raster_ids' => $raster_ids,
-            'project_id' => $project_id,
-            'vector_ids' => $vector_ids,
-        ],
-    ]);
+    try {
+        $client->post('http://127.0.0.1:5001/getMapAttr', [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+                'Authorization' => env('FLASK_API_TOKEN')
+            ],
+            'json' => [
+                'raster_ids' => $raster_ids,
+                'project_id' => $project_id,
+                'vector_ids' => $vector_ids,
+            ],
+        ]);
+    } catch (RequestException $e) {
+        if ($e->hasResponse()) {
+            $response = $e->getResponse();
+            $responseBody = $response->getBody()->getContents();
+            dd( "Error: " . $responseBody);
+        } else {
+            dd( "Error: " . $e->getMessage());
+        }
+    }
 }
 
 function getVector(Project $projectRecord) {

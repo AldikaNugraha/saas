@@ -4,14 +4,9 @@ namespace App\Filament\Resources\RasterResource\Pages;
 
 use App\Filament\Resources\RasterResource;
 use App\Jobs\RasterJob;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Select;
+use App\Jobs\SatelliteJob;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
-use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Wizard\Step;
 
 class CreateRaster extends CreateRecord
 {
@@ -21,16 +16,6 @@ class CreateRaster extends CreateRecord
     protected array $satellite_data;
     protected string $region_geojson;
     protected function mutateFormDataBeforeCreate(array $respone_data): array {
-//  [
-//   "project_id" => "1"
-//   "name" => "COba 1"
-//   "source" => "satellite"
-//   "collection_name" => "LANDSAT/LC09/C02/T2_L2"
-//   "do_monitoring" => true
-//   "region" => "blok_1_polygon.geojson"
-//   "start_date" => "01-11-2020"
-//   "end_date" => "31-10-2024"
-//  ]
         if ($respone_data["source"] == "satellite") {
             $file_name = $respone_data["region"];
             $this->file_path = asset("storage/{$file_name}");
@@ -63,20 +48,26 @@ class CreateRaster extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
+        if ($data["source"] == "satellite") {
+                unset($data['sattelite_source']);
+                unset($data['do_monitoring']);
+                unset($data['region']);
+                unset($data['start_date']);
+                unset($data['end_date']);
+            }
         if ($data["source"] == "drone") {
             unset($data['path']);
         }
 
-        if ($data["source"] == "satellite") {
-            unset($data['sattelite_source']);
-            unset($data['do_monitoring']);
-            unset($data['region']);
-            unset($data['start_date']);
-            unset($data['end_date']);
-        }
         $record = static::getModel()::create($data);
+        if ($data["source"] == "satellite") {
+            SatelliteJob::dispatch($record, $this->satellite_data,false);
+        }
 
-        // RasterJob::dispatch($record, $this->file_path,false);
+        if ($data["source"] == "drone") {
+            RasterJob::dispatch($record, $this->file_path,false);
+        }
+        
         return $record;
     }
 }

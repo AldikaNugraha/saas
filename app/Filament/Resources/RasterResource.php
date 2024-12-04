@@ -5,10 +5,10 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\RasterResource\Pages;
 use App\Filament\Resources\RasterResource\RelationManagers;
 use App\Jobs\RasterJob;
+use App\Jobs\SatelliteJob;
 use App\Models\Raster;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Set;
 use Filament\Forms\Get;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -21,6 +21,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Exception;
+use Log;
 
 class RasterResource extends Resource
 {
@@ -36,7 +37,13 @@ class RasterResource extends Resource
                     ->required()
                     ->preload()
                     ->searchable()
-                    ->relationship("project","name"),
+                    ->relationship(
+                        "project",
+                        "name",
+                        modifyQueryUsing: function (Builder $query) {
+                            $query->where('user_id', auth()->id());
+                        }
+                    ),
                 Select::make('source')
                     ->required()
                     ->options([
@@ -73,7 +80,6 @@ class RasterResource extends Resource
                     ->hidden(fn (Get $get) => $get('source') === 'drone')
                     ->required(fn (Get $get) => $get('source') === 'satellite'),
                 FileUpload::make('region')
-                    ->maxSize(51200)
                     ->preserveFilenames()
                     ->previewable(false)
                     ->label("Masukan Region of Interest (ROI)")
@@ -110,7 +116,6 @@ class RasterResource extends Resource
     {
         return $table
         ->modifyQueryUsing(function (Builder $query) {
-            // Assuming `user_id` is the foreign key in the projects table
             $query->whereHas('project', function ($projectQuery) {
                 $projectQuery->where('user_id', auth()->user()->id);
             });
@@ -137,9 +142,9 @@ class RasterResource extends Resource
                     ->requiresConfirmation()
                     ->before(function (Model $record) {
                         try {
-                            RasterJob::dispatch($record,null,true);
+                            $record->source == "satellite" ? SatelliteJob::dispatch($record,[],true) : RasterJob::dispatch($record,null,true);
                         } catch (Exception $e) {
-                            dd($e->getMessage());
+                            Log::error("Error: " . $e->getMessage());
                         }
                 }),
             ])

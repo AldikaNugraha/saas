@@ -27,11 +27,16 @@ class GeojsonJob implements ShouldQueue
     public function handle()
     {   
         $client = new Client();
-        $api_url = 'http://127.0.0.1:5001/process-geojson';
+        if (!$this->is_delete) {
+            $api_url = 'http://127.0.0.1:5001/process-geojson';
+        } else {
+            $api_url = 'http://127.0.0.1:5001/delete-geojson';
+        }
 
         $data = [
             'vector_id' => $this->file->id, 
             'project_id' => $this->file->categorical->project->id,
+            'vector_name' => $this->file->name,
             'is_delete' => $this->is_delete,
             'geojson' => $this->geojson
         ];
