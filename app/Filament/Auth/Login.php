@@ -13,8 +13,6 @@
                 "password"=>"admin12345",
                 "remember"=>true,
             ]);
-            // if (app()->environment("local")) {
-            // }    
         }
     }
 ?>

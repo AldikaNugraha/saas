@@ -11,5 +11,6 @@
         "chartjs-plugin-datalabels": "^2.2.0",
         "laravel-vite-plugin": "^1.0.0",
         "vite": "^5.0.0"
-    }
+    },
+    "engines": { "node": "18.x" }
 }
