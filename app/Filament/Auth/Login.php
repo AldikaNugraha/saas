@@ -8,11 +8,13 @@
         public function mount() : void 
         {
             parent::mount();
-            $this->form->fill([
-                "email"=>"admin@gmail.com",
-                "password"=>"admin12345",
-                "remember"=>true,
-            ]);
+            if (app()->environment("local")) {
+                $this->form->fill([
+                    "email"=>"admin@gmail.com",
+                    "password"=>"admin12345",
+                    "remember"=>true,
+                ]);
+            }    
         }
     }
 ?>
