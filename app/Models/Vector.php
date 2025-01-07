@@ -21,11 +21,17 @@ class Vector extends Model
     // ];
 
     protected $fillable = [
-        'categorical_id', 'type', 'num_features', 'area', 'name'
+        'project~_id', 'type', 'num_features', 'area', 'name'
     ];
 
     public function categorical()
     {
-        return $this->belongsTo(Categorical::class);
+        return $this->hasMany(Categorical::class);
     }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
+
 }

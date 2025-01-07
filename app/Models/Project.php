@@ -22,8 +22,8 @@ class Project extends Model
         return $this->hasMany(Raster::class);
     }
 
-    public function categoricals()
+    public function vector()
     {
-        return $this->hasMany(Categorical::class);
+        return $this->hasMany(Vector::class);
     }
 }

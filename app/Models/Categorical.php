@@ -9,18 +9,14 @@ class Categorical extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'project_id', 'name', 'pj_blok','area',
+        'vector_id', 'name', 'pj_blok','area',
         'num_tree','is_research', 'is_panen','is_pupuk'
     ];
 
-    public function project()
+    
+    public function vector()
     {
-        return $this->belongsTo(Project::class);
-    }
-
-    public function vectors()
-    {
-        return $this->hasMany(Vector::class);
+        return $this->belongsTo(Vector::class);
     }
 
     public function numerical()

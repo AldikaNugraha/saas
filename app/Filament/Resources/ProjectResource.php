@@ -56,17 +56,8 @@ class ProjectResource extends Resource
                 TextColumn::make("comodity")
                     ->searchable()
                     ->label("Project Comodity"),
-                TextColumn::make("num_vectors")
-                    ->state(function (Project $record): float {
-                        $num_vector = 0;
-                        $categorical_records = $record->categoricals;
-
-                        foreach ($categorical_records as $categorical_record) {
-                            $vectors_records = $categorical_record->vectors;
-                            $num_vector += $vectors_records->count();
-                        }
-                        return $num_vector;
-                    })
+                TextColumn::make("vector_count")
+                    ->counts("vector")
                     ->numeric()
                     ->label("Vector Count"),
                 TextColumn::make("raster_count")

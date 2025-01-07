@@ -15,10 +15,8 @@ return new class extends Migration
             $table->id()->autoIncrement();
             $table->string('name');
             $table->foreignId('categorical_id')->constrained("categoricals")->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('type');
             $table->unsignedBigInteger('num_field');
-            $table->integer('day');
-            $table->integer('month');
-            $table->integer('year');
             $table->timestampTz("created_at")->useCurrent();
             $table->timestampTz( "updated_at")->useCurrent();
         });

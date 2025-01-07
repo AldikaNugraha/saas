@@ -42,6 +42,10 @@ class NumericalResource extends Resource
                                 ->timezone('Asia/Jakarta')
                                 ->maxDate(now())
                                 ->label("Tanggal"),
+                TextInput::make('type')
+                    ->required()
+                    ->maxLength(255)
+                    ->label("Enter Numeric Tyoe"),
                 TextInput::make('num_field')
                     ->required()
                     ->maxLength(255)
@@ -54,7 +58,7 @@ class NumericalResource extends Resource
         return $table
             ->modifyQueryUsing(function (Builder $query) {
                 // Assuming `user_id` is the foreign key in the projects table
-                $query->whereHas('categorical.project', function ($projectQuery) {
+                $query->whereHas('categorical.vector.project', function ($projectQuery) {
                     $projectQuery->where('user_id', auth()->user()->id);
                 });
             })

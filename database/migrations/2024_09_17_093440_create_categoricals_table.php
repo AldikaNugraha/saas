@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('categoricals', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->foreignId('project_id')->constrained("projects")->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('vector_id')->constrained("vectors")->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('name');
             $table->string('pj_blok')->nullable();
             $table->float('area')->nullable();

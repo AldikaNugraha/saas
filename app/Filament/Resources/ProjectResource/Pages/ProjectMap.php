@@ -38,11 +38,9 @@ function sendOverlayRequest( $project_id= null, $raster_ids= null, $vector_ids= 
 }
 
 function getVector(Project $projectRecord) {
-    $categoricals = $projectRecord->categoricals()->with('vectors')->get();
-    return $categoricals
-        ->pluck('vectors.*.id')
-        ->flatten()
-        ->all();
+    $vectorIds = $projectRecord->vector()->pluck('id');
+
+    return $vectorIds;
 }
 
 function getRaster(Project $projectRecord) {

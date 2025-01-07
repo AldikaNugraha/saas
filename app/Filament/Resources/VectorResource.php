@@ -50,7 +50,7 @@ class VectorResource extends Resource
         return $table
         ->modifyQueryUsing(function (Builder $query) {
             // Assuming `user_id` is the foreign key in the projects table
-            $query->whereHas('categorical.project', function ($projectQuery) {
+            $query->whereHas('project', function ($projectQuery) {
                 $projectQuery->where('user_id', auth()->user()->id);
             });
         })

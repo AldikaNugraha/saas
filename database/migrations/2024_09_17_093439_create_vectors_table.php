@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('vectors', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->foreignId('categorical_id')->constrained("categoricals")->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('project_id')->constrained("projects")->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('name');
             $table->string('type')->nullable();
             $table->double('num_features')->nullable();

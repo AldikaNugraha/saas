@@ -11,10 +11,7 @@ class CreateNumerical extends CreateRecord
     protected static string $resource = NumericalResource::class;
 
     protected function mutateFormDataBeforeCreate(array $data): array {
-        list($day, $month, $year) = explode('-', $data['created_at']);
-        $data['day'] = $day;
-        $data['month'] = $month;
-        $data['year'] = $year;
+        $data["type"] = strtolower($data["type"]);    
         return $data;
     }
 
