@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Filament\Resources\VectorResource;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Storage;
+use Log;
 
 class CreateVector extends CreateRecord
 {

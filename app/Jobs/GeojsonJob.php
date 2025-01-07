@@ -9,7 +9,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
-use Laravel\Sanctum\PersonalAccessToken;
+use Log;
+
 class GeojsonJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -35,7 +36,7 @@ class GeojsonJob implements ShouldQueue
 
         $data = [
             'vector_id' => $this->file->id, 
-            'project_id' => $this->file->categorical->project->id,
+            'project_id' => $this->file->project->id,
             'vector_name' => $this->file->name,
             'is_delete' => $this->is_delete,
             'geojson' => $this->geojson
@@ -63,9 +64,16 @@ class GeojsonJob implements ShouldQueue
             if ($e->hasResponse()) {
                 $response = $e->getResponse();
                 $responseBody = $response->getBody()->getContents();
-                dd( "Error: " . $responseBody);
+                
+                // Log the error with response details
+                Log::error('API Error Response: ' . $responseBody, [
+                    'status_code' => $response->getStatusCode() ?? 'Unknown Status Code',
+                ]);
             } else {
-                dd( "Error: " . $e->getMessage());
+                // Log the error message if no response is available
+                Log::error('API Request Error: ' . $e->getMessage(), [
+                    'url' => $e->getRequest() ? $e->getRequest()->getUri() : 'Unknown Request URL',
+                ]);
             }
         }
     }

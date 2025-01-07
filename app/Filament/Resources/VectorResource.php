@@ -7,7 +7,7 @@ use App\Filament\Resources\VectorResource\RelationManagers;
 use App\Jobs\GeojsonJob;
 use App\Models\Vector;
 use Exception;
-use Filament\Forms;
+use App\Rules\GeoJson;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -30,18 +30,20 @@ class VectorResource extends Resource
     {
         return $form
             ->schema([
-                Select::make("categorical_id")
+                Select::make("project_id")
                     ->required()
                     ->preload()
                     ->searchable()
-                    ->relationship("categorical","name"),
+                    ->relationship("project","name"),
                 TextInput::make("name")
                     ->label("Vector Name")
                     ->required(),
                 FileUpload::make('path')
+                    ->rules([new GeoJson()])
+                    ->moveFiles()
                     ->preserveFilenames()
                     ->previewable(false)
-                    ->label("Masukan File GeoJSON"),
+                    ->label("Input GeoJSON"),
             ]);
     }
 
@@ -55,9 +57,9 @@ class VectorResource extends Resource
             });
         })
             ->columns([
-                TextColumn::make("categorical.name")
+                TextColumn::make("project.name")
                     ->searchable()
-                    ->label("Categorical Name"),
+                    ->label("Project Name"),
                 TextColumn::make("type")
                     ->label("Vector type"),
                 TextColumn::make("num_features")

@@ -25,11 +25,11 @@ class CategoricalResource extends Resource
     {
         return $form
             ->schema([
-                Select::make("project_id")
+                Select::make("vector_id")
                     ->required()
                     ->preload()
                     ->searchable()
-                    ->relationship("project","name"),
+                    ->relationship("vector","name"),
                 TextInput::make('name')
                     ->required()
                     ->maxLength(255)
@@ -50,9 +50,9 @@ class CategoricalResource extends Resource
                 TextColumn::make("name")
                     ->searchable()
                     ->label("Nama Data"),
-                TextColumn::make("project.name")
+                TextColumn::make("vector.name")
                     ->searchable()
-                    ->label("Nama Projek"),
+                    ->label("Vector Name"),
                 TextColumn::make("sum_num_field")
                     ->state(function (Categorical $record): float {
                         $query = $record->numerical()->toBase();

@@ -13,8 +13,6 @@ use Filament\Actions\ImportAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Pages\Concerns\ExposesTableToWidgets;
-use Illuminate\Database\Eloquent\Model;
-
 
 class ListCategoricals extends ListRecords
 {
@@ -25,21 +23,6 @@ class ListCategoricals extends ListRecords
     {
         return [
             CreateAction::make(),
-            ImportAction::make()
-                ->label("Upload CSV pake Importer")
-                ->importer(CategoricalImporter::class),
-            Action::make("upload_csv")
-                ->label("Upload CSV biasa")
-                ->model(Categorical::class)
-                ->form([
-                    TextInput::make('title')
-                        ->required()
-                        ->maxLength(255),
-                    // ...
-                ])
-                ->mutateFormDataUsing(function (array $data): array {
-                    return $data;
-                })
         ];
     }
 
