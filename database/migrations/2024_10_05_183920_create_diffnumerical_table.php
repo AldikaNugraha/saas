@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id()->autoIncrement();
             $table->string('name');
             $table->foreignId('categorical_id')->constrained("categoricals")->cascadeOnDelete()->cascadeOnUpdate();
-            $table->unsignedBigInteger('num_field');
+            $table->unsignedBigInteger('type_value');
             $table->integer('day');
             $table->integer('month');
             $table->integer('year');

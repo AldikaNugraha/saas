@@ -9,7 +9,7 @@ class Numerical extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'categorical_id', 'num_field', 'day', 'month', 'year'
+        'categorical_id', 'type_value', 'name', 'type_value'
     ];
 
     public function categorical()

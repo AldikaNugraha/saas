@@ -9,10 +9,12 @@ class Categorical extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'vector_id', 'name', 'pj_blok','area',
-        'num_tree','is_research', 'is_panen','is_pupuk'
+        'vector_id', 'name', 'columns'
     ];
 
+    protected $cast = [
+        'columns' => 'array'
+];
     
     public function vector()
     {

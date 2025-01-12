@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('project_id')->constrained("projects")->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('name');
             $table->string('type')->nullable();
+            $table->string('crs')->nullable();
             $table->double('num_features')->nullable();
             $table->float('area')->nullable();
             $table->timestampTz("created_at")->useCurrent();

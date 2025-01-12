@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->foreignId('categorical_id')->constrained("categoricals")->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('type');
-            $table->unsignedBigInteger('num_field');
+            $table->unsignedBigInteger('type_value');
             $table->timestampTz("created_at")->useCurrent();
             $table->timestampTz( "updated_at")->useCurrent();
         });

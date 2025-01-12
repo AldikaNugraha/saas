@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\VectorResource\Pages;
-use App\Filament\Resources\VectorResource\RelationManagers;
+use Filament\Forms\Set;
 use App\Jobs\GeojsonJob;
 use App\Models\Vector;
 use Exception;
@@ -18,13 +18,34 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use GuzzleHttp\Exception\RequestException;
+use Filament\Forms\Get;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+
+function parseGeoJsonProperties(TemporaryUploadedFile $file): array
+{
+    $filePath = $file->getRealPath();
+    if (!file_exists($filePath)) {
+        return [];
+    }
+    
+    $fileContents = file_get_contents($filePath);
+    $geoJson = json_decode($fileContents, true);
+
+    if (isset($geoJson['type']) && $geoJson['type'] === 'FeatureCollection') {
+        $firstFeature = $geoJson['features'][0] ?? null;
+        if ($firstFeature && isset($firstFeature['properties'])) {
+            return array_keys($firstFeature['properties']);
+        }
+    }
+    return [];
+}
 
 class VectorResource extends Resource
 {
     protected static ?string $model = Vector::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
 
     public static function form(Form $form): Form
     {
@@ -43,7 +64,28 @@ class VectorResource extends Resource
                     ->moveFiles()
                     ->preserveFilenames()
                     ->previewable(false)
+                    ->afterStateUpdated(function (?TemporaryUploadedFile $state, ?TemporaryUploadedFile $old, Set $set) {
+                        if ($state) {
+                            $properties = parseGeoJsonProperties($state);
+                            $listItems = [];
+                            foreach ($properties as $index => $property) {
+                                $listItems[$index] = $property;
+                            }
+                            $set('categorical_properties', $listItems);
+                            $set('numerical_properties', $listItems);
+                        }
+                    })
                     ->label("Input GeoJSON"),
+                Select::make("categorical_properties")
+                    ->multiple()
+                    ->options(fn (Get $get) => $get('categorical_properties') ?? [])
+                    ->preload()
+                    ->searchable(),
+                Select::make("numerical_properties")
+                    ->multiple()
+                    ->options(fn (Get $get) => $get('numerical_properties') ?? [])
+                    ->preload()
+                    ->searchable(),
             ]);
     }
 

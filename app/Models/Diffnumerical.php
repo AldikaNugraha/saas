@@ -9,7 +9,7 @@ class Diffnumerical extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'categorical_id', 'num_field', 'day', 'month', 'year', "created_at"
+        'categorical_id', 'type_value', 'day', 'month', 'year', "created_at"
     ];
 
     public function categorical()

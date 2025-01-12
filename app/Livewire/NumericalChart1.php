@@ -19,15 +19,15 @@ class NumericalChart1 extends Component
         // Loop through each categorical record and prepare the datasets
         foreach ($categorical_records as $categorical_record) {
             $numerical_records = $categorical_record->numerical->sortBy('month');
-            $num_fields = [];
+            $type_values = [];
 
             foreach ($numerical_records as $numerical_record) {
-                $num_fields[] = $numerical_record->num_field; // Replace 'num_field' with the actual field name
+                $type_values[] = $numerical_record->type_value; // Replace 'type_value' with the actual field name
             }
 
             $datasets[] = [
                 'label' => $categorical_record->name,
-                'data' => $num_fields,
+                'data' => $type_values,
             ];
 
             if (empty($labels)) {

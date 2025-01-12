@@ -21,7 +21,7 @@ class Vector extends Model
     // ];
 
     protected $fillable = [
-        'project~_id', 'type', 'num_features', 'area', 'name'
+        'project_id', 'type', 'num_features', 'area', 'name', 'crs'
     ];
 
     public function categorical()
