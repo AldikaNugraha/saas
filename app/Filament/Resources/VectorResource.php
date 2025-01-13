@@ -102,12 +102,28 @@ class VectorResource extends Resource
                 TextColumn::make("project.name")
                     ->searchable()
                     ->label("Project Name"),
-                TextColumn::make("type")
+                TextColumn::make("name")
+                    ->searchable()
                     ->label("Vector type"),
+                TextColumn::make("type")
+                    ->searchable()
+                    ->label("Vector type"),
+                TextColumn::make('crs')
+                    ->searchable()
+                    ->label("CRS"),
                 TextColumn::make("num_features")
+                    ->numeric()
                     ->label("Num of Vector"),
                 TextColumn::make("area")
                     ->label("Area (Km2)"),
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
@@ -145,8 +161,9 @@ class VectorResource extends Resource
         return [
             'index' => Pages\ListVectors::route('/'),
             'create' => Pages\CreateVector::route('/create'),
-            'view' => Pages\ViewVector::route('/{record}'),
             'edit' => Pages\EditVector::route('/{record}/edit'),
+            'view' => Pages\ViewVectorProperties::route('/{record}/properties'),
+            'view-numericals' => Pages\ViewVectorNumericals::route('/{record}/numericals'),
         ];
     }
 }
