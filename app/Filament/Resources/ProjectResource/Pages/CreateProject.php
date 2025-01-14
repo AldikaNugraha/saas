@@ -17,7 +17,6 @@ class CreateProject extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
-        // Create the record
         $record = static::getModel()::create($data);
         // Return the created record
         return $record;

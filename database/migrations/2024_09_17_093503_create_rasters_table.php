@@ -13,10 +13,13 @@ return new class extends Migration
     {
         Schema::create('rasters', function (Blueprint $table) {
             $table->id()->autoIncrement();
+            $table->foreignId('project_id')->constrained("projects")->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('source');
             $table->string('name');
-            $table->foreignId('project_id')->constrained()->onDelete('cascade');
-            $table->string('source'); #satelit atau drone
-            $table->integer('band')->nullable(); #band nya RGB/NIR/NDVI
+            $table->string('crs');
+            $table->float('gsd');
+            $table->integer('num_bands');
+            $table->integer('band')->nullable(); 
             $table->double('north')->nullable();
             $table->double('south')->nullable();
             $table->double('east')->nullable();

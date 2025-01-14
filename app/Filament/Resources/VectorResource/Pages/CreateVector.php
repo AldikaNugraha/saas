@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\VectorResource\Pages;
 
 use App\Jobs\GeojsonJob;
-use App\Jobs\ProcessCategoricalProperties;
+use App\Jobs\ProcessVectorFeatures;
 use Illuminate\Database\Eloquent\Model;
 use App\Filament\Resources\VectorResource;
 use Filament\Resources\Pages\CreateRecord;

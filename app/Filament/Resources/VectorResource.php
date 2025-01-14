@@ -19,7 +19,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Get;
-use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Filament\Forms;
 
 function parseGeoJsonProperties($file): array
 {
@@ -57,12 +57,18 @@ class VectorResource extends Resource
     {
         return $form
             ->schema([
-                Select::make("project_id")
+                Forms\Components\Select::make("project_id")
                     ->required()
                     ->preload()
                     ->native(false)
                     ->searchable()
-                    ->relationship("project","name"),
+                    ->relationship(
+                        "project",
+                        "name",
+                        modifyQueryUsing: function (Builder $query) {
+                            $query->where('user_id', auth()->id());
+                        }
+                    ),
                 TextInput::make("name")
                     ->label("Vector Name")
                     ->required(),

@@ -129,7 +129,7 @@ class RasterResource extends Resource
                     ->label("Raster Name"),
                 TextColumn::make("source")
                     ->label("Raster Source"),
-                TextColumn::make("band")
+                TextColumn::make("num_bands")
                     ->label("Raster Band Count"),
             ])
             ->filters([
