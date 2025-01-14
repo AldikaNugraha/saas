@@ -21,9 +21,14 @@ use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Get;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
-function parseGeoJsonProperties(TemporaryUploadedFile $file): array
+function parseGeoJsonProperties($file): array
 {
+    if (is_array($file)) {
+        $file = array_values($file)[0];
+    }
+    
     $filePath = $file->getRealPath();
+    
     if (!file_exists($filePath)) {
         return [];
     }
@@ -34,6 +39,7 @@ function parseGeoJsonProperties(TemporaryUploadedFile $file): array
     if (isset($geoJson['type']) && $geoJson['type'] === 'FeatureCollection') {
         $firstFeature = $geoJson['features'][0] ?? null;
         if ($firstFeature && isset($firstFeature['properties'])) {
+            // dd(array_keys($firstFeature['properties']));
             return array_keys($firstFeature['properties']);
         }
     }
@@ -54,6 +60,7 @@ class VectorResource extends Resource
                 Select::make("project_id")
                     ->required()
                     ->preload()
+                    ->native(false)
                     ->searchable()
                     ->relationship("project","name"),
                 TextInput::make("name")
@@ -61,31 +68,28 @@ class VectorResource extends Resource
                     ->required(),
                 FileUpload::make('path')
                     ->rules([new GeoJson()])
-                    ->moveFiles()
                     ->preserveFilenames()
+                    ->live()
                     ->previewable(false)
-                    ->afterStateUpdated(function (?TemporaryUploadedFile $state, ?TemporaryUploadedFile $old, Set $set) {
-                        if ($state) {
-                            $properties = parseGeoJsonProperties($state);
-                            $listItems = [];
-                            foreach ($properties as $index => $property) {
-                                $listItems[$index] = $property;
-                            }
-                            $set('categorical_properties', $listItems);
-                            $set('numerical_properties', $listItems);
-                        }
-                    })
                     ->label("Input GeoJSON"),
                 Select::make("categorical_properties")
                     ->multiple()
-                    ->options(fn (Get $get) => $get('categorical_properties') ?? [])
-                    ->preload()
+                    ->options(function (Get $get): array {
+                        $file = $get('path');
+                        if (!$file) return [];
+                        return parseGeoJsonProperties($file);
+                    })
+                    ->required()
                     ->searchable(),
                 Select::make("numerical_properties")
                     ->multiple()
-                    ->options(fn (Get $get) => $get('numerical_properties') ?? [])
-                    ->preload()
-                    ->searchable(),
+                    ->options(function (Get $get): array {
+                        $file = $get('path');
+                        if (!$file) return [];
+                        return parseGeoJsonProperties($file);
+                    })
+                    ->required()
+                    ->searchable()
             ]);
     }
 

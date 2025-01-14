@@ -27,9 +27,5 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // dd(Vite::asset('resources/js/chart.js'));
-        Model::unguard();
-        FilamentAsset::register([
-            // Js::make(id: 'chart-js-plugins', Vite::asset('resources/js/filament-chart-js-plugins.js'))->module(),
-        ]);
     }
 }

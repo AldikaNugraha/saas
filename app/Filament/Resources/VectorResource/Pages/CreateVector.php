@@ -17,21 +17,6 @@ class CreateVector extends CreateRecord
     protected string $geojson_response;
     protected $categorical_properties;
     protected function mutateFormDataBeforeCreate(array $data): array {
-        // [
-        //     "project_id" => "1"
-        //     "name" => "13"
-        //     "path" => "predicted_locations_polygon_ndvi_4326.geojson"
-        //     "categorical_properties" => array:5 [▼
-        //         0 => "latt"
-        //         1 => "long"
-        //         2 => "block"
-        //         3 => "isResearch"
-        //         4 => "area"
-        //     ]
-        //     "numerical_properties" => array:1 [▼
-        //         0 => "_mean"
-        //     ]
-        // ]
         $file_name = $data["path"];
         $this->file_path = asset("storage/{$file_name}");
         $context = stream_context_create([
@@ -43,6 +28,7 @@ class CreateVector extends CreateRecord
         $file_content = file_get_contents($this->file_path, false, $context);
         $this->geojson_response = json_encode(json_decode($file_content, True));
         $this->categorical_properties = $data["categorical_properties"];
+        $this->numerical_properties = $data["numerical_properties"];
         
         return $data;
     }
@@ -52,7 +38,12 @@ class CreateVector extends CreateRecord
         unset($data['path'], $data['categorical_properties'], $data['numerical_properties']);
         $record = static::getModel()::create($data);
         
-        ProcessCategoricalProperties::dispatch($record->id, $this->categorical_properties, $this->geojson_response);
+        ProcessVectorFeatures::dispatch(
+            $record,
+            $this->categorical_properties,
+            $this->numerical_properties,
+            $this->geojson_response
+        );
         GeojsonJob::dispatch($record, $this->geojson_response, is_delete:false);
         Storage::delete($this->file_path);
 
